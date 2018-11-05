@@ -26,10 +26,7 @@ class Base extends Controller
             //如果用户是admin则不进行权限验证
             if (session('user.is_admin') == 0) {
                 //$allRights权限及全体成员均能访问
-                $allRights = [
-                    "/admin/index/index",
-                    "/admin/index/home"
-                ];
+                $allRights = config('base.rbac_except');
                 if (!in_array($url, $allRights)) {
                     $Rbac = new Rbac();
                     $result = $Rbac->can($url, session('user.id'));
