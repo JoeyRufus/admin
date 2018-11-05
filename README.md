@@ -2,7 +2,7 @@ admin
 ===============
 
 基于thinkPHP搭建的后台管理系统
- + 数据库格式在admin中直接引入
+ + 数据库格式在admin.sql中直接引入
  + Rbac权限管理
  + Layui数据表格
 
