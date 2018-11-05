@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>小程序列表</title>
+    <link href="/static/admin/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="/static/admin/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="/static/admin/css/animate.css" rel="stylesheet">
+    <link href="/static/admin/css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="/static/admin/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <link href="/static/admin/layui/css/layui.css" rel="stylesheet" media="all">
+</head>
+<body class="gray-bg">
+<div class="row wrapper wrapper-content animated fadeInRight ">
+    <div class="col-sm-12">
+        <div class="ibox-title">
+            <h5>程序列表</h5>
+            <div class="ibox-tools">
+                <a class="collapse-link">
+                    <i class="fa fa-chevron-up"></i>
+                </a>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                    <i class="fa fa-wrench"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li><a href="buttons.html#">选项1</a>
+                    </li>
+                    <li><a href="buttons.html#">选项2</a>
+                    </li>
+                </ul>
+                <a class="close-link">
+                    <i class="fa fa-times"></i>
+                </a>
+            </div>
+        </div>
+        <div class="ibox-content">
+            <form class="layui-form" action="{:url('index')}" method="post">
+                <div class="layui-form-item">
+                    <div class="layui-input-inline">
+                        <input type="hidden" id="status" value="{$condition.status}">
+                        <select name="status">
+                            <option value="10">全部状态</option>
+                            <option value="0" {$condition.status==0?'selected':''}>禁用</option>
+                            <option value="1" {$condition.status==1?'selected':''}>正常</option>
+                        </select>
+                    </div>
+                    <div class="layui-input-inline">
+                        <input type="hidden" id="user_id" value="{$condition.user_id}">
+                        <select name="user_id">
+                            <option value="">全部开发者</option>
+                            {foreach $user_list as $user}
+                            <option value="{$user.id}" {$condition.user_id==$user.id?"selected":""}>{$user.nickname}
+                            </option>
+                            {/foreach}
+                        </select>
+                    </div>
+                    <div class="layui-input-inline">
+                        <input type="text" name="date" id="date" lay-verify="date" placeholder="请选择日期"
+                               autocomplete="off" class="layui-input" value="{$condition.date}">
+                    </div>
+                    <button class="layui-btn">搜索</button>
+                </div>
+            </form>
+            <!--<div>
+                <div class="btn-group">
+                    <button type="button" class="btn  btn-primary">全部</button>
+                    <button type="button" class="btn  btn-success">正常</button>
+                    <button type="button" class="btn  btn-warning">禁用</button>
+                </div>
+                <div class="input-group">
+                    <select name="" id="">
+                        <option value="">123</option>
+                        <option value="">456</option>
+                    </select>
+                </div>
+                &lt;!&ndash;备用按钮&ndash;&gt;
+                &lt;!&ndash; <button type="button" class="btn btn-outline btn-success">成功</button>
+                 <button type="button" class="btn btn-outline btn-info">信息</button>
+                 <button type="button" class="btn btn-outline btn-warning">警告</button>&ndash;&gt;
+            </div>-->
+            <table class="layui-hide" id="dataTable" lay-filter="dataTable"></table>
+        </div>
+    </div>
+</div>
+</body>
+<!-- 全局js -->
+<script src="/static/admin/js/jquery.min.js?v=2.1.4"></script>
+<script src="/static/admin/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="/static/admin/js/content.js?v=1.0.0"></script>
+<!--layui.js-->
+<script src="/static/admin/layui/layui.js" charset="utf-8"></script>
+<!-- Sweet alert -->
+<script src="/static/admin/js/plugins/sweetalert/sweetalert.min.js"></script>
+<!--layui操作栏-->
+<script type="text/html" id="barDemo">
+    <a class="btn btn-danger btn-outline btn-xs" lay-event="del"><i class="fa fa-close"></i>删除</a>
+</script>
+<script type="text/html" id="switchTpl">
+    <input type="checkbox" name="on_off" value="{{d.id}}" lay-skin="switch" lay-text="正常|禁用" lay-filter="on_off"
+           {{d.on_off==1?'checked':''}}>
+</script>
+<script type="text/html" id="userTpl">
+    {{d.user.nickname}}
+</script>
+<!--layui事件-->
+<script>
+    var limit = '{$condition.limit}';
+    layui.use('table', function () {
+        var table = layui.table, form = layui.form;
+        table.render({
+            elem: '#dataTable',
+            url: "{:url('show')}",
+            skin: 'row', //列边框风格
+            even: true, //开启隔行背景
+            page: true,
+            size: 'lg', //大小尺寸的表格
+            cellMinWidth: 80,
+            method: 'post', //如果无需自定义HTTP类型，可不加该参数
+            where: {
+                status: $("#status").val(),
+                user_id: $("#user_id").val(),
+                date: $("input[name='date']").val()
+            },
+            limit: limit, // 请求条数
+            limits: [limit, Math.ceil(2 * limit), Math.ceil(3 * limit), Math.ceil(4 * limit)],
+            cols: [[
+                {type: 'numbers'},
+                {field: 'name', align: 'center', title: '小程序名称', unresize: true},
+                {field: 'user_id', align: 'center', title: '开发者', unresize: true, templet: '#userTpl'},
+                {field: 'onclick_num', align: 'center', title: '请求次数', unresize: true, sort: true},
+                {field: 'monitor', align: 'center', title: '绑定微信', unresize: true},
+                {field: 'mark', align: 'center', title: '编号', unresize: true},
+                {field: 'email', align: 'center', title: '关联邮箱', unresize: true},
+                {field: 'code', align: 'center', title: 'Code', unresize: true},
+                {field: 'on_off', align: 'center', title: '是否上架', templet: '#switchTpl', unresize: true},
+                {field: 'create_time', align: 'center', title: '上传时间', unresize: true},
+                {title: '操作', align: 'center', toolbar: '#barDemo'}
+            ]]
+        });
+        form.on('switch(on_off)', function (obj) {
+            if (obj.elem.checked) {
+                var on_off = 1;
+            } else {
+                on_off = 0;
+            }
+            var id = this.value;
+            $.ajax({
+                url: "{:url('minisoftadd/status')}",
+                data: {
+                    id: id,
+                    on_off: on_off
+                },
+                dataType: 'json',
+                type: 'post',
+                success: function (res) {
+                    swal({
+                        title: res.code,
+                        type: res.code == 200 ? 'success' : 'error',
+                        text: res.msg
+                    }, function () {
+                        if (res.code != 200)
+                            window.location.reload();
+                    });
+                }, error: function () {
+                    swal({
+                        title: "500",
+                        type: 'error',
+                        text: "系统错误，请联系后台开发人员。"
+                    });
+                }
+            });
+        });
+        table.on('tool(dataTable)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值
+            if (layEvent === 'del') {
+                swal({
+                            title: "您确定要删除这条信息吗?",
+                            text: "删除后将无法恢复，请谨慎操作！",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "是的，我要删除！",
+                            cancelButtonText: "让我再考虑一下…",
+                            closeOnConfirm: false,
+                            closeOnCancel: false
+                        },
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                $.ajax({
+                                    url: "{:url('minisoftadd/del')}",
+                                    data: {
+                                        id: data.id
+                                    },
+                                    type: 'post',
+                                    dataType: 'json',
+                                    success: function (res) {
+                                        swal({
+                                            title: res.code,
+                                            type: res.code == 200 ? 'success' : 'error',
+                                            text: res.msg
+                                        }, function () {
+                                            obj.del();
+                                            /*window.location.reload()*/
+                                        });
+                                    },
+                                    error: function () {
+                                        swal("已取消", "删除操作执行失败！", "error");
+                                    }
+                                });
+                            } else {
+                                swal("已取消", "您取消了删除操作！", "error");
+                            }
+                        });
+            }
+        });
+    });
+</script>
+<script>
+    layui.use(['laydate'], function () {
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#date'
+        });
+    });
+</script>
+</html>

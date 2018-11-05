@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--360浏览器优先以webkit内核解析-->
+
+    <title>主页</title>
+    <link href="/static/admin/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="/static/admin/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="/static/admin/css/animate.css" rel="stylesheet">
+    <link href="/static/admin/css/style.css?v=4.1.0" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox">
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="panel panel-success">
+                                <div class="panel-heading">
+                                    Welcome
+                                </div>
+                                <div class="panel-body">
+                                    <p>admin <span id="weather"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    欢迎来到SW2.0
+                                </div>
+                                <div class="panel-body">
+                                    <p>页面更加系统化</p>
+                                    <p>操作更加明确</p>
+                                    <p>访问速度得到明显提升</p>
+                                    <p>增加个人统计界面</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="panel panel-info">
+                                <div class="panel-heading">
+                                    服务器信息
+                                </div>
+                                <div class="panel-body">
+                                    <p><i class="fa fa-sitemap"></i> 框架版本：
+                                    </p>
+                                    <p><i class="fa fa-windows"></i> 服务环境：
+                                    </p>
+                                    <p><i class="fa fa-warning"></i> 上传限制：
+                                    </p>
+                                    <p><i class="fa fa-credit-card"></i> PHP版本：
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 全局js -->
+<script src="/static/admin/js/jquery.min.js?v=2.1.4"></script>
+<script src="/static/admin/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="/static/admin/js/plugins/layer/layer.min.js"></script>
+
+<!-- 自定义js -->
+<script src="/static/admin/js/content.js"></script>
+
+<!-- 欢迎信息 -->
+<script src="/static/admin/js/jquery.leoweather.min.js"></script>
+<script type="text/javascript">
+    $('#weather').leoweather({format: '，{时段}好！<span id="colock">现在时间是：<strong>{年}年{月}月{日}日 星期{周} {时}:{分}:{秒}</strong></span>'});
+</script>
+</body>
+</html>

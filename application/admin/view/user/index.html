@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户列表</title>
+    <link href="/static/admin/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="/static/admin/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="/static/admin/css/animate.css" rel="stylesheet">
+    <link href="/static/admin/css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="/static/admin/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <link href="/static/admin/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css" rel="stylesheet">
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <p>
+                <button type="button" class="btn btn-outline btn-primary" id="addAccount" href="#modal-form"
+                        data-toggle="modal">新建用户
+                </button>
+                <!--备用按钮-->
+                <!-- <button type="button" class="btn btn-outline btn-success">成功</button>
+                 <button type="button" class="btn btn-outline btn-info">信息</button>
+                 <button type="button" class="btn btn-outline btn-warning">警告</button>-->
+            </p>
+        </div>
+        {foreach $users as $user}
+        <div class="col-sm-3">
+            <div class="contact-box">
+                <a href="javascript:;">
+                    <div class="col-sm-4">
+                        <div class="text-center">
+                            <img alt="image" class="img-circle m-t-xs img-responsive"
+                                 onerror="this.src='/static/admin/img/a8.jpg'" src="{$user.avatar}">
+                            <div class="m-t-xs font-bold">{$user.role.name}</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-8">
+                        <h3><strong>{$user.nickname}</strong></h3>
+                        <p><i class="fa fa-user"></i> {$user.username}</p>
+                        <p><i class="fa fa-hourglass"></i> {$user.create_time}</p>
+                        <button class="btn btn-{$user.status==1?'primary':'danger'} btn-sm on_off"
+                                status="{$user.status}" user_id="{$user.id}">{$user.status==1?'正常':'禁用'}
+                        </button>
+                    </div>
+                    <div class="clearfix"></div>
+                </a>
+            </div>
+        </div>
+        {/foreach}
+    </div>
+</div>
+<div id="modal-form" class="modal fade" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <form class="form-horizontal m-t" id="signupForm">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">账号：</label>
+                                <div class="col-sm-6">
+                                    <input id="username" name="username" class="form-control" type="text"
+                                           aria-required="true" aria-invalid="true" class="error">
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">角色：</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" name="role_id">
+                                        {foreach $role as $vo}
+                                        <option value="{$vo.id}">{$vo.name}</option>
+                                        {/foreach}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">昵称：</label>
+                                <div class="col-sm-6">
+                                    <input id="nickname" name="nickname" class="form-control" type="text"
+                                           aria-required="true" aria-invalid="true" class="error">
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">密码：</label>
+                                <div class="col-sm-6">
+                                    <input id="password" name="password" class="form-control" type="password">
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">确认密码：</label>
+                                <div class="col-sm-6">
+                                    <input id="confirm_password" name="confirm_password" class="form-control"
+                                           type="password">
+                                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 请再次输入您的密码</span>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-4">
+                                    <button class="btn btn-primary" type="submit" id="createBtn">提交</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 全局js -->
+<script src="/static/admin/js/jquery.min.js?v=2.1.4"></script>
+<script src="/static/admin/js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- 自定义js -->
+<script src="/static/admin/js/content.js?v=1.0.0"></script>
+
+<!-- jQuery Validation plugin javascript-->
+<script src="/static/admin/js/plugins/validate/jquery.validate.min.js"></script>
+<script src="/static/admin/js/plugins/validate/messages_zh.min.js"></script>
+<script src="/static/admin/js/demo/form-validate-demo.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('.contact-box').each(function () {
+            animationHover(this, 'pulse');
+        });
+    });
+</script>
+
+<script src="/static/admin/js/plugins/sweetalert/sweetalert.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.on_off').click(function () {
+            var status = $(this).attr('status');
+            var id = $(this).attr('user_id')
+            swal({
+                title: status == 1 ? "您确定要禁用该用户吗？" : "您确定启用该用户吗？",
+                text: status == 1 ? "禁用过后，该用户将无法正常登录！" : "启用过后，该用户将能正常登录！",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: status == 1 ? "禁用" : "启用",
+                closeOnConfirm: false
+            }, function () {
+                $.ajax({
+                    url: "{:url('user/status')}",
+                    data: {
+                        id: id,
+                        status: 1 - status
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (res) {
+                        swal({
+                            title: res.code,
+                            type: res.code == 200 ? 'success' : 'error',
+                            text: res.msg
+                        }, function () {
+                            window.location.reload();
+                        });
+                    },
+                    error: function () {
+                        swal({
+                            title: "操作失败",
+                            type: 'error',
+                            text: "系统内部错误！"
+                        });
+                    }
+                });
+            });
+
+        });
+    });
+</script>
+<script>
+    $('#createBtn').click(function () {
+        $.ajax({
+            url: "{:url('user/store')}", //你的路由地址
+            type: "post",
+            dataType: "json",
+            data: $("form").serialize(),
+            success: function (res) {
+                if (res.code == 200) {
+                    swal({
+                        title: 200,
+                        type: 'success',
+                        text: res.msg
+                    }, function () {
+                        window.location.href = window.location.href;
+                    });
+                } else {
+                    swal({
+                        title: 403,
+                        type: 'error',
+                        text: res.msg
+                    });
+                }
+
+            },
+            error: function () {
+                swal({
+                    title: "Error!",
+                    type: 'error',
+                    text: "系统错误，成员创建失败。"
+                });
+            }
+        });
+        return false;
+    });
+</script>
+</body>
+
+</html>

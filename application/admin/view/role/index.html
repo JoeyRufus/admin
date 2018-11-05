@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>角色列表</title>
+    <link href="/static/admin/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="/static/admin/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="/static/admin/css/animate.css" rel="stylesheet">
+    <link href="/static/admin/css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="/static/admin/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <link href="/static/admin/layui/css/layui.css" rel="stylesheet" media="all">
+    <style>
+        #role_list input[type=checkbox] {
+            margin-top: 0 !important;
+            opacity: 1;
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+<div class="row wrapper wrapper-content animated fadeInRight ">
+    <div class="col-sm-10 col-sm-offset-1">
+        <p>
+            <button type="button" class="btn btn-outline btn-primary" id="addAccount" href="#modal-form"
+                    data-toggle="modal">新建角色
+            </button>
+            <!--备用按钮-->
+            <!-- <button type="button" class="btn btn-outline btn-success">成功</button>
+             <button type="button" class="btn btn-outline btn-info">信息</button>
+             <button type="button" class="btn btn-outline btn-warning">警告</button>-->
+        </p>
+    </div>
+    <div class="col-sm-10 col-sm-offset-1">
+        <div class="ibox-title">
+            <h5>角色列表</h5>
+            <div class="ibox-tools">
+                <a class="collapse-link">
+                    <i class="fa fa-chevron-up"></i>
+                </a>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="buttons.html#">
+                    <i class="fa fa-wrench"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li><a href="buttons.html#">选项1</a>
+                    </li>
+                    <li><a href="buttons.html#">选项2</a>
+                    </li>
+                </ul>
+                <a class="close-link">
+                    <i class="fa fa-times"></i>
+                </a>
+            </div>
+        </div>
+        <div class="ibox-content">
+            <table class="layui-hide" id="roleTable" lay-filter="roleTable"></table>
+        </div>
+    </div>
+</div>
+
+<div id="modal-form" class="modal fade" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <form class="form-horizontal" method="post" action="{:url('store')}">
+                            <!--简单的文本输入框-->
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">角色名称：</label>
+                                <div class="col-sm-9">
+                                    <input id="name" type="text" class="form-control" name="name">
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">角色描述：</label>
+                                <div class="col-sm-9">
+                                    <input id="description" type="text" class="form-control" name="description">
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group" id="role_list">
+                                <label class="col-sm-3 control-label">访问权限：</label>
+                                <div class="col-sm-9">
+                                    {foreach $permissions as $permission}
+                                    <label class="checkbox" style="text-indent:{$permission.level*25}px">
+                                        <input id="{$permission.id}" type="checkbox"
+                                               value="{$permission.id}_{$permission.pid}_{$permission.level}"
+                                               name="access[]" pid="{$permission.pid}" level="{$permission.level}">
+                                        {switch $permission.level}
+                                        {case 1 }【一级菜单】{/case}
+                                        {case 2}【二级菜单】{/case}
+                                        {default /}【页面请求】
+                                        {/switch}{$permission.name}
+                                    </label>
+                                    {/foreach}
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-4">
+                                    <button class="btn btn-primary" type="submit" id="createBtn"><i
+                                            class="fa fa-save"></i>
+                                        保存
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<!-- 全局js -->
+<script src="/static/admin/js/jquery.min.js?v=2.1.4"></script>
+<script src="/static/admin/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="/static/admin/js/content.js?v=1.0.0"></script>
+<!--layui.js-->
+<script src="/static/admin/layui/layui.js" charset="utf-8"></script>
+<!-- Sweet alert -->
+<script src="/static/admin/js/plugins/sweetalert/sweetalert.min.js"></script>
+<!--layui操作栏-->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+</script>
+<!--layui事件-->
+<script>
+    layui.use('table', function () {
+        var table = layui.table, form = layui.form;
+        table.render({
+            elem: '#roleTable',
+            url: "{:url('show')}",
+            cellMinWidth: 80,
+            cols: [[
+                {type: 'numbers'},
+                {field: 'name', align: 'center', title: '角色名称', templet: '#name'},
+                {field: 'description', align: 'center', title: '角色描述'},
+                {title: '操作', align: 'center', toolbar: '#barDemo'}
+            ]]
+        });
+        table.on('tool(roleTable)', function (obj) {
+            var data = obj.data;
+            //console.log(obj)
+            if (obj.event === 'edit') {
+                window.location.href = "{:url('edit')}?id=" + data.id;
+            }
+        });
+    });
+</script>
+<!--树形选中事件-->
+<script>
+    $(":checkbox").click(function () {
+                var i, inputs;
+                var level = $(this).attr('level');
+                if (level == 1) {
+                    //模块级别的判断
+                    inputs = $('input[pid=' + $(this).attr('id') + ']');
+                    if ($(this).prop('checked')) {
+                        inputs.prop("checked", true);
+                        for (i = 0; i < inputs.length; i++) {
+                            $('input[pid=' + inputs[i].id + ']').prop('checked', true)
+                        }
+                    } else {
+                        inputs.prop("checked", false);
+                        for (i = 0; i < inputs.length; i++) {
+                            $('input[pid=' + inputs[i].id + ']').prop('checked', false)
+                        }
+                    }
+                } else if (level == 2) {
+                    //控制器级别的判断
+                    inputs = $('input[pid=' + $(this).attr('id') + ']');
+                    var p_id = $(this).attr('pid');
+                    if ($(this).prop('checked')) {
+                        inputs.prop("checked", true);
+                        $('input[id=' + p_id + ']').prop("checked", true);
+                    } else {
+                        inputs.prop("checked", false);
+                        var flag = true;
+                        var inputss = $('input[pid=' + p_id + ']');
+                        for (i = 0; i < inputss.length; i++) {
+                            if ($("input[id=" + inputss[i].id + "]").prop('checked')) {
+                                flag = false;
+                            }
+                        }
+                        if (flag) {
+                            $('input[id=' + p_id + ']').prop("checked", false);
+                        }
+                    }
+                } else {
+                    //方法级别的判断
+                    p_id = $(this).attr('pid');//方法所属控制器id
+                    inputs = $('input[id=' + p_id + ']');//方法所属控制器实例
+                    var p_ids = inputs[0].value.split('_');//p_ids[1]方法所属模块id
+                    if ($(this).prop('checked')) {
+                        inputs.prop("checked", true);
+                        $('input[id=' + p_ids[1] + ']').prop('checked', true);
+                    } else {
+                        flag = true;
+                        inputss = $('input[pid=' + p_id + ']');//方法的同级兄弟
+                        for (i = 0; i < inputss.length; i++) {
+                            if ($("input[id=" + inputss[i].id + "]").prop('checked')) {
+                                flag = false;
+                            }
+                        }
+                        if (flag) {
+                            inputs.prop("checked", false);
+                            inputss = $('input[pid=' + p_ids[1] + ']');//方法控制器的同级控制器
+                            for (i = 0; i < inputss.length; i++) {
+                                if ($("input[id=" + inputss[i].id + "]").prop('checked')) {
+                                    flag = false;
+                                }
+                            }
+                            if (flag) {
+                                $('input[id=' + p_ids[1] + ']').prop('checked', false);
+                            }
+                        }
+                    }
+                }
+            }
+    )
+</script>
+<script>
+    $('#createBtn').click(function () {
+        $.ajax({
+            url: "{:url('role/store')}", //你的路由地址
+            type: "post",
+            dataType: "json",
+            data: $("form").serialize(),
+            success: function (res) {
+                swal({
+                    title: res.code,
+                    type: res.code == 200 ? 'success' : 'error',
+                    text: res.msg
+                }, function () {
+                    window.location.href = window.location.href;
+                });
+            },
+            error: function () {
+                swal({
+                    title: "Error!",
+                    type: 'error',
+                    text: "角色创建出错。"
+                });
+            }
+        });
+        return false;
+    });
+</script>
+</html>

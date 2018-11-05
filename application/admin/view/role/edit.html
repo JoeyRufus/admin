@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编辑角色</title>
+    <link href="/static/admin/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="/static/admin/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="/static/admin/css/animate.css" rel="stylesheet">
+    <link href="/static/admin/css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="/static/admin/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css" rel="stylesheet">
+    <style>
+        #role_list input[type=checkbox] {
+            margin-top: 0 !important;
+            opacity: 1;
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>编辑【{$role.name}】</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="form_basic.html#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="form_basic.html#">选项1</a>
+                            </li>
+                            <li><a href="form_basic.html#">选项2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal" method="post" action="{:url('update')}">
+                        <!--简单的文本输入框-->
+                        <input type="hidden" name="id" value="{$role.id}">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">角色名称：</label>
+                            <div class="col-sm-9">
+                                <input id="name" type="text" class="form-control" name="name" value="{$role.name}">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">角色描述：</label>
+                            <div class="col-sm-9">
+                                <input id="description" type="text" class="form-control" name="description"
+                                       value="{$role.description}">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group" id="role_list">
+                            <label class="col-sm-3 control-label">访问权限：</label>
+                            <div class="col-sm-9">
+                                {foreach $permissions as $permission}
+                                <label class="checkbox" style="text-indent:{$permission.level*25}px">
+                                    <input id="{$permission.id}" type="checkbox"
+                                           value="{$permission.id}_{$permission.pid}_{$permission.level}"
+                                           name="access[]" pid="{$permission.pid}" level="{$permission.level}"
+                                           {$permission.access==1?'checked':''}>
+                                    {switch $permission.level}
+                                    {case 1 }【一级菜单】{/case}
+                                    {case 2}【二级菜单】{/case}
+                                    {default /}【页面请求】
+                                    {/switch}{$permission.name}
+                                </label>
+                                {/foreach}
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-4">
+                                <button class="btn btn-primary" type="submit" id="updateBtn"><i
+                                        class="fa fa-save"></i>保存
+                                </button>
+                                <a class="btn btn-danger" href="javascript:history.go(-1);"><i
+                                        class="fa fa-close"></i>取消</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 全局js -->
+<script src="/static/admin/js/jquery.min.js?v=2.1.4"></script>
+<script src="/static/admin/js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- 自定义js -->
+<script src="/static/admin/js/content.js?v=1.0.0"></script>
+
+<script>
+    $(":checkbox").click(function () {
+                var i, inputs;
+                var level = $(this).attr('level');
+                if (level == 1) {
+                    //模块级别的判断
+                    inputs = $('input[pid=' + $(this).attr('id') + ']');
+                    if ($(this).prop('checked')) {
+                        inputs.prop("checked", true);
+                        for (i = 0; i < inputs.length; i++) {
+                            $('input[pid=' + inputs[i].id + ']').prop('checked', true)
+                        }
+                    } else {
+                        inputs.prop("checked", false);
+                        for (i = 0; i < inputs.length; i++) {
+                            $('input[pid=' + inputs[i].id + ']').prop('checked', false)
+                        }
+                    }
+                } else if (level == 2) {
+                    //控制器级别的判断
+                    inputs = $('input[pid=' + $(this).attr('id') + ']');
+                    var p_id = $(this).attr('pid');
+                    if ($(this).prop('checked')) {
+                        inputs.prop("checked", true);
+                        $('input[id=' + p_id + ']').prop("checked", true);
+                    } else {
+                        inputs.prop("checked", false);
+                        var flag = true;
+                        var inputss = $('input[pid=' + p_id + ']');
+                        for (i = 0; i < inputss.length; i++) {
+                            if ($("input[id=" + inputss[i].id + "]").prop('checked')) {
+                                flag = false;
+                            }
+                        }
+                        if (flag) {
+                            $('input[id=' + p_id + ']').prop("checked", false);
+                        }
+                    }
+                } else {
+                    //方法级别的判断
+                    p_id = $(this).attr('pid');//方法所属控制器id
+                    inputs = $('input[id=' + p_id + ']');//方法所属控制器实例
+                    var p_ids = inputs[0].value.split('_');//p_ids[1]方法所属模块id
+                    if ($(this).prop('checked')) {
+                        inputs.prop("checked", true);
+                        $('input[id=' + p_ids[1] + ']').prop('checked', true);
+                    } else {
+                        flag = true;
+                        inputss = $('input[pid=' + p_id + ']');//方法的同级兄弟
+                        for (i = 0; i < inputss.length; i++) {
+                            if ($("input[id=" + inputss[i].id + "]").prop('checked')) {
+                                flag = false;
+                            }
+                        }
+                        if (flag) {
+                            inputs.prop("checked", false);
+                            inputss = $('input[pid=' + p_ids[1] + ']');//方法控制器的同级控制器
+                            for (i = 0; i < inputss.length; i++) {
+                                if ($("input[id=" + inputss[i].id + "]").prop('checked')) {
+                                    flag = false;
+                                }
+                            }
+                            if (flag) {
+                                $('input[id=' + p_ids[1] + ']').prop('checked', false);
+                            }
+                        }
+                    }
+                }
+            }
+    )
+</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>登录</title>
+    <link href="/static/admin/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/admin/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="/static/admin/css/animate.css" rel="stylesheet">
+    <link href="/static/admin/css/style.css" rel="stylesheet">
+    <link href="/static/admin/css/login.css" rel="stylesheet">
+    <link href="/static/admin/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;{:url('ie')}"/>
+    <![endif]-->
+    <script>
+        if (window.top !== window.self) {
+            window.top.location = window.location;
+        }
+    </script>
+
+</head>
+
+<body class="signin">
+<div class="signinpanel">
+    <div class="row">
+        <div class="col-sm-7">
+            <div class="signin-info">
+                <div class="logopanel m-b">
+                    <h1>[ SW ]</h1>
+                </div>
+                <div class="m-b"></div>
+                <h4>欢迎进入 <strong>后台管理系统</strong></h4>
+                <ul class="m-b">
+                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 大成若缺，其用不弊。</li>
+                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 大盈若冲，其用不穷。</li>
+                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 大直若屈。大巧若拙。大辩若讷。</li>
+                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 静胜躁，寒胜热。</li>
+                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 清静为天下正。</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <form method="post">
+                <h4 class="no-margins">登录：</h4>
+                <input type="text" class="form-control uname" placeholder="用户名" id="username"/>
+                <input type="password" class="form-control pword m-b" placeholder="密码" id="password"/>
+                <div class="code">
+                    <input type="text" class="form-control" placeholder="验证码" name="code" id="code"/>
+                    <img id="codeImg" src="{:url('login/verify')}" onclick="this.src='{:url(\'login/verify\')}'"/>
+                </div>
+                <button class="btn btn-success btn-block">登录</button>
+            </form>
+        </div>
+    </div>
+    <div class="signup-footer">
+        <div class="pull-left">
+            &copy; 2018 All Rights Reserved
+        </div>
+    </div>
+</div>
+<script src="/static/admin/js/jquery.min.js?v=2.1.4"></script>
+<script src="/static/admin/js/plugins/toastr/toastr.min.js"></script>
+<!--登录验证-->
+<script>
+    $('.btn').click(function () {
+        var username = $.trim($('#username').val());
+        var password = $.trim($('#password').val());
+        var code = $.trim($('#code').val());
+        if (username == "" || password == "" || code == "") {
+            toastr.warning("请检查输入信息")
+        }
+        else {
+            $.ajax({
+                url: "{:url('login')}",
+                type: 'post',
+                data: {
+                    username: username,
+                    password: password,
+                    code: code
+                },
+                dataType: 'json',
+                success: function (res) {
+                    if (res.code != 1) {
+                        $('#codeImg').attr('src', "{:url('login/verify')}");
+                        $('#code').val('');
+                        toastr.error(res.msg)
+                    } else {
+                        toastr.success(res.msg);
+                        setTimeout(function () {
+                            window.location.href = "{:url('index/index')}";
+                        }, 1000);
+                    }
+                }
+            })
+        }
+        return false;
+    })
+</script>
+</body>
+</html>
