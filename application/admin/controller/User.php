@@ -34,7 +34,7 @@ class User extends Base
             $data = $request->post();
             $data['password'] = md5($data['password']);
             $data['create_time'] = date("Y-m-d H:i:s");
-            if ($data['role_id'] == 0) {
+            if ($data['role_id'] == 1) {
                 $data['is_admin'] = 1;
             }
             $res = db("user")->strict(false)->insert($data);
