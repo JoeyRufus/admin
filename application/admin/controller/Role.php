@@ -73,11 +73,13 @@ class Role extends Base
     {
         $Rbac = new Rbac();
         $roleM = new RoleModel();
-        $data = [];
         $roleM->update($request->post(), ['id' => $request->post('id')]);
-        foreach ($request->post('access') as $value) {
-            $tmp = explode('_', $value);
-            $data[] = $tmp[0];
+        $data = [];
+        if ($request->post('access')) {
+            foreach ($request->post('access') as $value) {
+                $tmp = explode('_', $value);
+                $data[] = $tmp[0];
+            }
         }
         db('role_permission')->where('role_id', $request->post('id'))->delete();
         $Rbac->assignRolePermission($request->post('id'), $data);
