@@ -38,7 +38,7 @@ class Role extends Base
     {
         $roleModel = new RoleModel();
         $role = $roleModel->create($request->post());
-        if ($request->post('is_admin') == 0) {
+        if ($request->post('access')) {
             $data = [];
             foreach ($request->post('access') as $value) {
                 $tmp = explode('_', $value);
