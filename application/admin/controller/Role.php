@@ -73,7 +73,7 @@ class Role extends Base
     {
         $Rbac = new Rbac();
         $roleM = new RoleModel();
-        $roleM->update($request->post(), ['id' => $request->post('id')]);
+        $result = $roleM->update($request->post(), ['id' => $request->post('id')]);
         $data = [];
         if ($request->post('access')) {
             foreach ($request->post('access') as $value) {
@@ -83,6 +83,6 @@ class Role extends Base
         }
         db('role_permission')->where('role_id', $request->post('id'))->delete();
         $Rbac->assignRolePermission($request->post('id'), $data);
-        $this->redirect('index');
+        return Rjson($result, '角色修改成功！', '角色修改失败');
     }
 }

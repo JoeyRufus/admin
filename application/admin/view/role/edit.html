@@ -10,6 +10,7 @@
     <link href="/static/admin/css/font-awesome.css?v=4.4.0" rel="stylesheet">
     <link href="/static/admin/css/animate.css" rel="stylesheet">
     <link href="/static/admin/css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="/static/admin/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
     <link href="/static/admin/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css" rel="stylesheet">
     <style>
         #role_list input[type=checkbox] {
@@ -26,40 +27,21 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <h5>编辑【{$role.name}】</h5>
-                    <div class="ibox-tools">
-                        <a class="collapse-link">
-                            <i class="fa fa-chevron-up"></i>
-                        </a>
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="form_basic.html#">
-                            <i class="fa fa-wrench"></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-user">
-                            <li><a href="form_basic.html#">选项1</a>
-                            </li>
-                            <li><a href="form_basic.html#">选项2</a>
-                            </li>
-                        </ul>
-                        <a class="close-link">
-                            <i class="fa fa-times"></i>
-                        </a>
-                    </div>
-                </div>
+
                 <div class="ibox-content">
                     <form class="form-horizontal" method="post" action="{:url('update')}">
                         <!--简单的文本输入框-->
                         <input type="hidden" name="id" value="{$role.id}">
                         <div class="form-group">
                             <label class="col-sm-3 control-label">角色名称：</label>
-                            <div class="col-sm-9">
+                            <div class="col-sm-7">
                                 <input id="name" type="text" class="form-control" name="name" value="{$role.name}">
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
                             <label class="col-sm-3 control-label">角色描述：</label>
-                            <div class="col-sm-9">
+                            <div class="col-sm-7">
                                 <input id="description" type="text" class="form-control" name="description"
                                        value="{$role.description}">
                             </div>
@@ -89,8 +71,6 @@
                                 <button class="btn btn-primary" type="submit" id="updateBtn"><i
                                         class="fa fa-save"></i>保存
                                 </button>
-                                <a class="btn btn-danger" href="javascript:history.go(-1);"><i
-                                        class="fa fa-close"></i>取消</a>
                             </div>
                         </div>
                     </form>
@@ -104,10 +84,11 @@
 <!-- 全局js -->
 <script src="/static/admin/js/jquery.min.js?v=2.1.4"></script>
 <script src="/static/admin/js/bootstrap.min.js?v=3.3.6"></script>
-
+<!-- Sweet alert -->
+<script src="/static/admin/js/plugins/sweetalert/sweetalert.min.js"></script>
 <!-- 自定义js -->
 <script src="/static/admin/js/content.js?v=1.0.0"></script>
-
+<!--树形图选择规则-->
 <script>
     $(":checkbox").click(function () {
                 var i, inputs;
@@ -178,6 +159,34 @@
                 }
             }
     )
+</script>
+<!--提交-->
+<script>
+    $("#updateBtn").click(function () {
+        $.ajax({
+            url: "{:url('role/update')}", //你的路由地址
+            type: "post",
+            dataType: "json",
+            data: $("form").serialize(),
+            success: function (res) {
+                swal({
+                    title: res.code,
+                    type: res.code == 200 ? 'success' : 'error',
+                    text: res.msg
+                }, function () {
+                    parent.location.reload();
+                });
+            },
+            error: function () {
+                swal({
+                    title: "Error!",
+                    type: 'error',
+                    text: "编辑过程出错。"
+                });
+            }
+        });
+        return false;
+    })
 </script>
 </body>
 </html>

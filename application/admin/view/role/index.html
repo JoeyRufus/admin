@@ -143,9 +143,16 @@
         });
         table.on('tool(roleTable)', function (obj) {
             var data = obj.data;
-            //console.log(obj)
             if (obj.event === 'edit') {
-                window.location.href = "{:url('edit')}?id=" + data.id;
+                var checkBox_num = $(".checkbox").length;
+                layer.open({
+                    type: 2,
+                    title: '编辑【' + data.name + '】',
+                    shadeClose: true,
+                    shade: 0.8,
+                    area: ['768px', checkBox_num * 27 + 390 + 'px'],
+                    content: "{:url('edit')}?id=" + data.id
+                });
             }
         });
     });
