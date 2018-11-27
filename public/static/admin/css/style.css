@@ -11,9 +11,7 @@ h3,
 h4,
 h5,
 h6 {
-    font-weight: 100 !important;
-    margin-top: 20px !important;
-    margin-bottom: 10px !important;
+    font-weight: 100;
 }
 
 h1 {
