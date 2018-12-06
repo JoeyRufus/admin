@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章列表</title>
+    <link href="/static/admin/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="/static/admin/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="/static/admin/css/animate.css" rel="stylesheet">
+    <link href="/static/admin/css/style.css?v=4.1.0" rel="stylesheet">
+
+    <link href="/static/admin/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <link href="/static/admin/layui/css/layui.css" rel="stylesheet" media="all">
+</head>
+
+<body class="gray-bg">
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-sm-4">
+        <h2>文章管理</h2>
+        <ol class="breadcrumb">
+            <li>
+                <strong>文章列表</strong>
+            </li>
+        </ol>
+    </div>
+    <div class="col-sm-8">
+        <div class="title-action">
+            <a href="{:url('create')}" class="btn btn-primary">添加文章</a>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper wrapper-content white-bg">
+    <div class="row">
+        <div class="col-sm-12">
+            <table class="layui-hide" id="dataTable" lay-filter="dataTable"></table>
+        </div>
+    </div>
+</div>
+
+<!-- 全局js -->
+<script src="/static/admin/js/jquery.min.js?v=2.1.4"></script>
+<script src="/static/admin/js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- 自定义js -->
+<script src="/static/admin/js/content.js?v=1.0.0"></script>
+
+<!--layui.js-->
+<script src="/static/admin/layui/layui.js" charset="utf-8"></script>
+
+<!-- Sweet alert -->
+<script src="/static/admin/js/plugins/sweetalert/sweetalert.min.js"></script>
+
+<!--layui事件-->
+<script>
+    var limit = '{$limit}';
+    layui.use('table', function () {
+        var table = layui.table, form = layui.form;
+        table.render({
+            elem: '#dataTable',
+            url: "{:url('show')}",
+            skin: 'row', //列边框风格
+            even: true, //开启隔行背景
+            page: true,
+            size: 'lg', //大小尺寸的表格
+            cellMinWidth: 80,
+            method: 'post', //如果无需自定义HTTP类型，可不加该参数
+            limit: limit, // 请求条数
+            limits: [limit, Math.ceil(2 * limit), Math.ceil(3 * limit), Math.ceil(4 * limit)],
+            cols: [[
+                {type: 'numbers'},
+                {field: 'title', align: 'center', title: '标题', unresize: true},
+                {field: 'author', align: 'center', title: '作者', unresize: true},
+                {field: 'tip', align: 'center', title: '备注', unresize: true},
+                {field: 'cover', align: 'center', title: '封面', unresize: true, templet: "#coverTpl"},
+                {title: '操作', align: 'center', toolbar: '#barDemo'}
+            ]]
+        });
+        form.on('switch(on_off)', function (obj) {
+            if (obj.elem.checked) {
+                var on_off = 1;
+            } else {
+                on_off = 0;
+            }
+            var id = this.value;
+            $.ajax({
+                url: "{:url('minisoftadd/status')}",
+                data: {
+                    id: id,
+                    on_off: on_off
+                },
+                dataType: 'json',
+                type: 'post',
+                success: function (res) {
+                    swal({
+                        title: res.code,
+                        type: res.code == 200 ? 'success' : 'error',
+                        text: res.msg
+                    }, function () {
+                        if (res.code != 200)
+                            window.location.reload();
+                    });
+                }, error: function () {
+                    swal({
+                        title: "500",
+                        type: 'error',
+                        text: "系统错误，请联系后台开发人员。"
+                    });
+                }
+            });
+        });
+        table.on('tool(dataTable)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值
+            if (layEvent === 'del') {
+                swal({
+                            title: "您确定要删除这条信息吗?",
+                            text: "删除后将无法恢复，请谨慎操作！",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "是的，我要删除！",
+                            cancelButtonText: "让我再考虑一下…",
+                            closeOnConfirm: false,
+                            closeOnCancel: false
+                        },
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                $.ajax({
+                                    url: "{:url('minisoftadd/del')}",
+                                    data: {
+                                        id: data.id
+                                    },
+                                    type: 'post',
+                                    dataType: 'json',
+                                    success: function (res) {
+                                        swal({
+                                            title: res.code,
+                                            type: res.code == 200 ? 'success' : 'error',
+                                            text: res.msg
+                                        }, function () {
+                                            obj.del();
+                                            /*window.location.reload()*/
+                                        });
+                                    },
+                                    error: function () {
+                                        swal("已取消", "系统错误，请联系后台开发人员。", "error");
+                                    }
+                                });
+                            } else {
+                                swal("已取消", "您取消了删除操作！", "error");
+                            }
+                        });
+            }
+        });
+    });
+</script>
+<!--layui表格内容填充-->
+<script type="text/html" id="barDemo">
+    <a class="btn btn-primary btn-outline btn-xs" lay-event="edit"><i class="fa fa-paste"></i> 修改</a>&nbsp;&nbsp;
+    <a class="btn btn-danger btn-outline btn-xs" lay-event="del"><i class="fa fa-trash-o"></i> 删除</a>
+</script>
+<script type="text/html" id="coverTpl">
+    <img src="{{ d.cover }}" onerror="this.src='/static/admin/img/no_img.jpg'"/>
+</script>
+</body>
+
+</html>

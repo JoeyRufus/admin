@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>添加文章</title>
+    <link href="/static/admin/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="/static/admin/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="/static/admin/css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="/static/admin/css/animate.css" rel="stylesheet">
+    <link href="/static/admin/css/style.css?v=4.1.0" rel="stylesheet">
+    <link href="/static/admin/css/plugins/webuploader/webuploader.css" rel="stylesheet">
+    <link href="/static/admin/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <style>
+        .img_box {
+            display: inline-block;
+            position: relative;
+        }
+
+        .img_box span {
+            position: absolute;
+            top: 5px;
+            right: 15px;
+            font-size: 20px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .img_box img {
+            margin-right: 10px;
+            margin-bottom: 10px;
+            height: 100px;
+        }
+
+    </style>
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>添加文章
+                        <small>提示</small>
+                    </h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="form_basic.html#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="form_basic.html#">选项1</a>
+                            </li>
+                            <li><a href="form_basic.html#">选项2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <form method="get" class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">标题</label>
+                            <div class="col-sm-7">
+                                <input type="text" name="title" class="form-control">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">作者</label>
+                            <div class="col-sm-7">
+                                <input type="text" name="author" class="form-control"> <span
+                                    class="help-block m-b-none">帮助文本，可能会超过一行，以块级元素显示</span>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">备注</label>
+                            <div class="col-sm-7">
+                                <input type="text" name="tip" placeholder="提示信息" class="form-control">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">封面图</label>
+                            <div class="col-sm-7">
+                                <input type="hidden" id="dataImg" name="cover">
+                                <div id="fileList" class="uploader-list" style="float:right"></div>
+                                <img id="img_data" height="120px"
+                                     style="margin-right: 10px;"
+                                     src=""
+                                     onerror="this.src='/static/admin/img/no_img.jpg'"/>
+                                <div id="imgPicker" style="margin-top: 10px;">选择图片</div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">图册</label>
+                            <div class="col-sm-7">
+                                <input type="hidden" id="data_images" name="images" value=""/>
+                                <div id="fileListMul" class="uploader-list" style="float:right"></div>
+                                <div id="box"></div>
+                                <div id="imgPickerMul">选择图片</div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">正文</label>
+                            <div class="col-sm-7">
+                                <!--ue编辑器-->
+                                <script src="/static/admin/ueditor/ueditor.config.js"></script>
+                                <script src="/static//admin/ueditor/ueditor.all.js"></script>
+                                <textarea name="content" id="myEditor"></textarea>
+                                <script type="text/javascript">
+                                    var editor = new UE.ui.Editor();
+                                    editor.render("myEditor");
+                                </script>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-3">
+                                <button class="btn btn-primary" type="submit" id="createBtn"><i class="fa fa-save"></i>
+                                    保存
+                                </button>
+                                <a class="btn btn-danger" href="javascript:history.go(-1);"><i class="fa fa-close"></i>
+                                    取消</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 全局js -->
+<script src="/static/admin/js/jquery.min.js?v=2.1.4"></script>
+<script src="/static/admin/js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- 自定义js -->
+<script src="/static/admin/js/content.js?v=1.0.0"></script>
+<!-- Sweet alert -->
+<script src="/static/admin/js/plugins/sweetalert/sweetalert.min.js"></script>
+
+<!-- Web Uploader -->
+<script src="/static/admin/js/plugins/webuploader/webuploader.min.js"></script>
+<!--图片上传-->
+<script>
+    //上传图片,初始化WebUploader
+    WebUploader.create({
+        auto: true,// 选完文件后，是否自动上传。
+        swf: '/static/admin/webupload/Uploader.swf',// swf文件路径
+        server: '{:url("upload")}',// 文件接收服务端。
+        duplicate: true,// 重复上传图片，true为可重复false为不可重复
+        pick: '#imgPicker',// 选择文件的按钮。可选。
+        accept: {
+            title: 'Images',
+            extensions: 'gif,jpg,jpeg,bmp,png',
+            mimeTypes: 'image/jpg,image/jpeg,image/png'
+        },
+        'onUploadSuccess': function (file, data) {
+            $("#dataImg").val(data.path);
+            $("#img_data").attr('src', data.path);
+        }
+    });
+    WebUploader.create({
+        auto: true,// 选完文件后，是否自动上传。
+        swf: '/static/admin/webupload/Uploader.swf',// swf文件路径
+        server: '{:url("upload")}',// 文件接收服务端。
+        duplicate: true,// 重复上传图片，true为可重复false为不可重复
+        pick: '#imgPickerMul',// 选择文件的按钮。可选。
+        accept: {
+            title: 'Images',
+            extensions: 'gif,jpg,jpeg,bmp,png',
+            mimeTypes: 'image/jpg,image/jpeg,image/png'
+        },
+        'onUploadSuccess': function (file, data) {
+            var imagesPath = $("#data_images").val();
+            var imagesHtml = "<div class='img_box'>" +
+                    "<span class='fa fa-trash' onclick='del(this)' imgSrc='" + data.path + "'></span>" +
+                    "<img  src='" + data.path + "'/></div>";
+            imagesPath += data.path + '|';
+            $('#box').append(imagesHtml);
+            $("#data_images").val(imagesPath);
+        }
+    });
+    function del(obj) {
+        $(obj.parentNode).remove();
+        var value = $("#data_images").val();
+        value = value.replace($(obj).attr('imgSrc') + '|', '');
+        $("#data_images").val(value);
+    }
+</script>
+<script>
+    $('#createBtn').click(function () {
+        $.ajax({
+            url: "{:url('store')}", //你的路由地址
+            type: "post",
+            dataType: "json",
+            data: $("form").serialize(),
+            success: function (res) {
+                swal({
+                    title: res.code,
+                    type: res.code == 200 ? 'success' : 'error',
+                    text: res.msg
+                }, function () {
+                    window.location.href = "{:url('index')}";
+                });
+            },
+            error: function () {
+                swal({
+                    title: "Error!",
+                    type: 'error',
+                    text: "系统错误，请联系后台开发人员。"
+                });
+            }
+        });
+        return false;
+    });
+</script>
+</body>
+</html>

@@ -37,4 +37,25 @@ class Base extends Controller
             }
         }
     }
+
+    public function upload()
+    {
+        if ($_FILES['file']['error'] != 0) {
+            return ['code' => 0, 'msg' => '上传错误'];
+        }
+        $ext = strrchr($_FILES['file']['name'], '.');
+        $path = 'uploads/' . date('Y-m-d') . '/';
+        if (!is_dir($path)) {
+            mkdir($path, 0777, true);
+        }
+        $filename = uniqid() . $ext;
+        $real_path = $path . $filename;
+        move_uploaded_file($_FILES['file']['tmp_name'], $real_path);
+        $file_path = '/uploads/' . date('Y-m-d') . '/' . $filename;
+        if ($file_path) {
+            echo json_encode([
+                'path' => $file_path
+            ]);
+        }
+    }
 }
